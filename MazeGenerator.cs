@@ -37,7 +37,7 @@ public class MazeGenerator : MonoBehaviour {
 
         //穴掘り法
         Recursion(x, y);
-        //さっきの情報を元に生成
+        //mazeFlagの情報を元に生成
         CreateWall();
     }
 
