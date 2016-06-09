@@ -9,6 +9,7 @@ using System.Collections;
 
 public class MazeGenerator : MonoBehaviour {
 
+    [Header("奇数を入力してください")]
     [SerializeField]
     Vector2 mazeSize;   //サイズ
 
@@ -22,10 +23,19 @@ public class MazeGenerator : MonoBehaviour {
     //設定でエラーがあれば表示
     void CheckSettingError()
     {
-        if (mazeSize.x % 2 == 0 || mazeSize.y % 2 == 0) Debug.LogError("奇数にしてください");
-        if (mazeSize.x < 5 || mazeSize.y < 5) Debug.LogError("迷路のサイズを大きくしてください");
+        if (mazeSize.x % 2 == 0 || mazeSize.y % 2 == 0)
+        {
+            Debug.LogError("奇数にしてください");
+            Application.Quit();
+        }
+        if (mazeSize.x < 5 || mazeSize.y < 5)
+        {
+            Debug.LogError("迷路のサイズを大きくしてください");
+            Application.Quit();
+        }
     }
 
+    //迷路を生成
     void GenerateMaze()
     {
         mazeFlag = new bool[(int)mazeSize.x, (int)mazeSize.y];  //初期化
@@ -41,6 +51,7 @@ public class MazeGenerator : MonoBehaviour {
         CreateWall();
     }
 
+    //壁の生成
     void CreateWall()
     {
         for (int y = 0; y < mazeSize.y; y++)
@@ -49,19 +60,23 @@ public class MazeGenerator : MonoBehaviour {
             {
                 if (!mazeFlag[x, y])
                 {
-                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cube.transform.position = new Vector3(x, 0, y);
+                    //入り口と出口の穴を開け、壁を生成する
+                    if (!((x == 1 && y == 0) || (x == mazeSize.x - 1 && y == mazeSize.y - 2)))
+                    {
+                        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.transform.position = new Vector3(x, 0, y);
+                        cube.transform.parent = this.transform;
+                    }
                 }
             }
         }
     }
 
+    //穴掘り法
     void Recursion(int r, int c)
     {
         int[] randDirs = new int[] { 0, 1, 2, 3 };
         Shuffle(randDirs);  //シャッフル
-
-        Debug.Log(randDirs[0]);
 
         for (int i = 0; i < randDirs.Length; i++)
         {
